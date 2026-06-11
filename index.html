@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Таймер до важного события</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Шрифт Google Fonts — загружается по сети; при офлайн сработает запасной системный -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <header class="header">
+    <div class="header__inner">
+      <div class="logo">
+        <span class="logo__icon" aria-hidden="true">⏳</span>
+        <h1 class="logo__title">Таймер до события</h1>
+      </div>
+      <p class="header__subtitle">Отсчитывай дни до самого важного момента!</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Блок выбора события -->
+    <section class="card card--events" aria-labelledby="events-title">
+      <h2 id="events-title" class="card__title">Выбери событие</h2>
+      <div class="event-buttons" role="group" aria-label="Готовые события">
+        <button type="button" class="btn btn--preset" data-preset="birthday">
+          <span class="btn__emoji" aria-hidden="true">🎂</span>
+          <span class="btn__text">День рождения</span>
+        </button>
+        <button type="button" class="btn btn--preset" data-preset="vacation">
+          <span class="btn__emoji" aria-hidden="true">🏖️</span>
+          <span class="btn__text">Каникулы</span>
+        </button>
+        <button type="button" class="btn btn--preset" data-preset="newyear">
+          <span class="btn__emoji" aria-hidden="true">🎆</span>
+          <span class="btn__text">Новый год</span>
+        </button>
+      </div>
+
+      <form class="custom-form" id="custom-form" novalidate>
+        <h3 class="custom-form__title">Или своё событие</h3>
+        <div class="form-row">
+          <label class="form-label" for="event-name">Название события</label>
+          <input
+            type="text"
+            id="event-name"
+            class="form-input"
+            placeholder="Например: Экзамен по математике"
+            maxlength="80"
+            required
+          >
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="event-date">Дата события</label>
+          <input type="date" id="event-date" class="form-input" required>
+        </div>
+        <button type="submit" class="btn btn--primary">
+          <span class="btn__emoji" aria-hidden="true">✨</span>
+          <span class="btn__text">Установить таймер</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- Блок таймера -->
+    <section class="card card--timer" aria-labelledby="timer-title">
+      <h2 id="timer-title" class="visually-hidden">Обратный отсчёт</h2>
+
+      <div class="event-info" id="event-info">
+        <p class="event-info__placeholder">Выбери событие, чтобы начать отсчёт</p>
+      </div>
+
+      <div class="countdown" id="countdown" aria-live="polite" aria-atomic="true">
+        <div class="countdown__unit">
+          <span class="countdown__value" id="days">--</span>
+          <span class="countdown__label">дней</span>
+        </div>
+        <div class="countdown__separator" aria-hidden="true">:</div>
+        <div class="countdown__unit">
+          <span class="countdown__value" id="hours">--</span>
+          <span class="countdown__label">часов</span>
+        </div>
+        <div class="countdown__separator" aria-hidden="true">:</div>
+        <div class="countdown__unit">
+          <span class="countdown__value" id="minutes">--</span>
+          <span class="countdown__label">минут</span>
+        </div>
+        <div class="countdown__separator" aria-hidden="true">:</div>
+        <div class="countdown__unit">
+          <span class="countdown__value" id="seconds">--</span>
+          <span class="countdown__label">секунд</span>
+        </div>
+      </div>
+
+      <!-- Прогресс-бар: показывает, сколько пути до события уже пройдено -->
+      <div class="progress" id="progress" hidden>
+        <div class="progress__header">
+          <span class="progress__label">Прогресс до события</span>
+          <span class="progress__percent" id="progress-percent">0%</span>
+        </div>
+        <div
+          class="progress__track"
+          id="progress-track"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Прогресс до события"
+        >
+          <div class="progress__fill" id="progress-fill"></div>
+        </div>
+        <p class="progress__hint" id="progress-hint">Отсчёт начался с момента установки таймера</p>
+      </div>
+
+      <p class="timer-message timer-message--hidden" id="timer-message" role="status"></p>
+    </section>
+
+    <!-- Дополнительные блоки -->
+    <div class="extras">
+      <!-- Картинка дня -->
+      <section class="card card--image" aria-labelledby="image-title">
+        <h2 id="image-title" class="card__title">Картинка дня</h2>
+        <div class="day-image" id="day-image" aria-hidden="true"></div>
+        <p class="day-image__caption" id="image-caption">Тематическая иллюстрация на сегодня</p>
+      </section>
+
+      <!-- Факт дня -->
+      <section class="card card--fact" aria-labelledby="fact-title">
+        <h2 id="fact-title" class="card__title">Факт дня</h2>
+        <p class="fact-text" id="fact-text">Загрузка факта…</p>
+      </section>
+
+      <!-- Цитата / фраза дня -->
+      <section class="card card--quote" aria-labelledby="quote-title">
+        <h2 id="quote-title" class="card__title">Фраза дня</h2>
+        <blockquote class="quote-text" id="quote-text">
+          <p>Загрузка цитаты…</p>
+        </blockquote>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <a href="#" class="footer__logo" aria-label="На главную">
+          <span class="footer__logo-icon" aria-hidden="true">⏳</span>
+          <span class="footer__logo-text">Таймер до события</span>
+        </a>
+        <p class="footer__tagline">Отсчитывай дни до самого важного момента</p>
+      </div>
+
+      <div class="footer__divider" aria-hidden="true"></div>
+
+      <div class="footer__info">
+        <p class="footer__student">
+          <span class="footer__label">Ученик:</span>
+          <span class="footer__student-name">Robert Slavin</span>
+        </p>
+        <p class="footer__copyright">
+          &copy; <span id="current-year"></span> Таймер до важного события. Все права защищены.
+        </p>
+        <p class="footer__project">Школьный проект по информатике</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Модальное окно подтверждения -->
+  <div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal__backdrop" data-action="cancel"></div>
+    <div class="modal__content">
+      <h3 id="modal-title" class="modal__title">Сменить событие?</h3>
+      <p class="modal__text" id="modal-text">Ты уверен, что хочешь установить новое событие?</p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" data-action="cancel">Отмена</button>
+        <button type="button" class="btn btn--primary" data-action="confirm">Да, сменить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
